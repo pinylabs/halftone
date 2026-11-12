@@ -1,0 +1,105 @@
+---
+// The home: the wordmark printed out of register beside last year's closing night, the line-up ticker, one day's
+// timetable, the speakers as a contact sheet, the venue's plan, and the passes.
+import PassTicket from "../components/PassTicket.astro";
+import SpeakerCard from "../components/SpeakerCard.astro";
+import Ticker from "../components/Ticker.astro";
+import Timetable from "../components/Timetable.astro";
+import VenuePlan from "../components/VenuePlan.astro";
+import Site from "../layouts/Site.astro";
+import { getFestival, getPasses, getSessions, getSpeakers, unsplash } from "../lib/festival";
+
+const festival = await getFestival();
+const sessions = await getSessions();
+const speakers = await getSpeakers();
+const passes = await getPasses();
+const homeDay = festival.days.find((day) => day.slug === festival.homeDay) ?? festival.days[0];
+const pictured = speakers.filter((speaker) => speaker.data.photo).slice(0, 4);
+---
+
+<Site>
+  <main>
+    <section class="pt-9 pb-7">
+      <div class="wrap grid grid-cols-hero items-end gap-9 max-md:grid-cols-1">
+        <div>
+          <p class="flex flex-wrap gap-3.5 font-display text-ui font-semibold tracking-caps uppercase">
+            <span>{festival.dates}</span><span class="text-primary-500 dark:text-primary-400">{festival.venue}</span><span>{festival.city}</span>
+          </p>
+          <h1 class="relative mt-4.5 text-poster font-black max-md:text-poster-sm">
+            <span class="block animate-rise text-primary-500 dark:text-primary-400">HALF<br />TONE</span>
+            <span class="absolute inset-0 block translate-x-1.75 -translate-y-1.25 animate-register text-secondary-500 mix-blend-multiply dark:text-secondary-400 dark:mix-blend-screen" aria-hidden="true">HALF<br />TONE</span>
+          </h1>
+          <p class="mt-5.5 max-w-lede text-lede max-md:text-lede-sm">
+            {festival.lede} <strong class="bg-primary-500 px-1 text-neutral-900 dark:bg-primary-400">{festival.ledeMark}</strong>
+            {festival.ledeEnd}
+          </p>
+        </div>
+        <figure class="relative aspect-4/5 overflow-hidden border-2 bg-secondary-500 dark:bg-secondary-400">
+          <img class="block size-full object-cover mix-blend-multiply grayscale contrast-115" src={unsplash(festival.hero.src, 1200)} width="1200" height="1500" alt={festival.hero.alt} />
+          <div class="dots absolute inset-0 animate-print-in opacity-28 mix-blend-multiply"></div>
+          <figcaption class="absolute bottom-3 left-3 bg-tertiary-100 px-2 py-1 text-tag font-semibold text-neutral-900 dark:bg-neutral-950 dark:text-tertiary-200">
+            {festival.hero.caption} · <a href={festival.hero.credit.page}>{festival.hero.credit.photographer}</a>
+          </figcaption>
+        </figure>
+      </div>
+      <Ticker speakers={speakers} />
+    </section>
+
+    <section class="pt-22" id="programme">
+      <div class="wrap">
+        <div class="mb-6.5 flex items-end justify-between gap-5">
+          <h2 class="section-title">The <em>programme</em></h2>
+          <a class="border-b-2 border-primary-500 font-bold dark:border-primary-400" href="/programme/">All three days →</a>
+        </div>
+        <nav class="mb-4 flex gap-2" aria-label="Days">
+          {
+            festival.days.map((day) => (
+              <a
+                class="border-2 px-3.5 py-2 text-label font-bold current:bg-neutral-900 current:text-tertiary-100 dark:current:bg-tertiary-200 dark:current:text-neutral-950"
+                href={`/programme/${day.slug}/`}
+                aria-current={day === homeDay ? "date" : undefined}
+              >
+                {day.short}
+              </a>
+            ))
+          }
+        </nav>
+        <Timetable festival={festival} day={homeDay} sessions={sessions} />
+      </div>
+    </section>
+
+    <section class="pt-22" id="speakers">
+      <div class="wrap">
+        <div class="mb-6.5 flex items-end justify-between gap-5">
+          <h2 class="section-title">Who's <em>speaking</em></h2>
+          <a class="border-b-2 border-primary-500 font-bold dark:border-primary-400" href="/speakers/">All forty →</a>
+        </div>
+        <div class="grid grid-cols-4 gap-4.5 max-md:grid-cols-2">
+          {pictured.map((speaker) => <SpeakerCard speaker={speaker} />)}
+        </div>
+      </div>
+    </section>
+
+    <section class="pt-22" id="venue">
+      <div class="wrap">
+        <div class="mb-6.5 flex items-end justify-between gap-5">
+          <h2 class="section-title">The <em>{festival.venue.replace(/^The /, "")}</em></h2>
+          <a class="border-b-2 border-primary-500 font-bold dark:border-primary-400" href="/venue/">Getting here →</a>
+        </div>
+        <div class="grid grid-cols-2 items-stretch gap-7 max-md:grid-cols-1">
+          <figure class="reveal overflow-hidden border-2">
+            <img class="block size-full object-cover" loading="lazy" src={unsplash(festival.venuePhoto.src, 1400)} width="1400" height="1050" alt={festival.venuePhoto.alt} />
+          </figure>
+          <VenuePlan note={festival.gettingHere} />
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-22 bg-neutral-900 text-tertiary-100 dark:bg-tertiary-200 dark:text-neutral-950" id="passes">
+      <div class="wrap grid grid-cols-passes items-center gap-6 py-13.5 max-md:grid-cols-1 max-md:py-10">
+        <h2 class="section-title">Get a pass</h2>
+        {passes.map((pass) => <PassTicket pass={pass} />)}
+      </div>
+    </section>
+  </main>
+</Site>

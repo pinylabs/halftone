@@ -1,0 +1,25 @@
+---
+// The line-up ticker: every speaker's name, in the line-up's order, running past on the pink pass. The names are
+// drawn twice so the run loops without a seam; a reader is given the list once.
+import type { Speaker } from "../lib/festival";
+
+interface Props {
+  speakers: Speaker[];
+}
+
+const lineup = [...Astro.props.speakers].sort((a, b) => a.data.lineup - b.data.lineup).map((speaker) => speaker.data.name);
+---
+
+<div class="mt-7.5 overflow-hidden border-y-2 border-neutral-900 bg-primary-500 text-neutral-900 dark:border-tertiary-200 dark:bg-primary-400">
+  <p class="sr-only">The line-up: {lineup.join(", ")}.</p>
+  <div class="flex w-max animate-tick gap-10.5 py-3 font-display text-ticker font-extrabold whitespace-nowrap max-md:text-ticker-sm" aria-hidden="true">
+    {
+      [...lineup, ...lineup].map((name) => (
+        <Fragment>
+          <span>{name}</span>
+          <span class="text-secondary-500 dark:text-secondary-400">✺</span>
+        </Fragment>
+      ))
+    }
+  </div>
+</div>

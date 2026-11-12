@@ -1,0 +1,38 @@
+---
+// Every speaker and studio of the festival on one contact sheet, each with the sessions they give.
+import SpeakerCard from "../components/SpeakerCard.astro";
+import Site from "../layouts/Site.astro";
+import { getSessions, getSpeakers } from "../lib/festival";
+
+const speakers = await getSpeakers();
+const sessions = await getSessions();
+---
+
+<Site title="Who's speaking">
+  <main class="wrap">
+    <div class="pt-11 pb-7.5">
+      <h1 class="page-title">Who's <em>speaking</em></h1>
+      <p class="mt-5.5 max-w-lede text-lede max-md:text-lede-sm">{speakers.length} of the forty, in this sample: the people and studios behind the talks and workshops.</p>
+    </div>
+    <div class="grid grid-cols-4 gap-x-4.5 gap-y-10 border-t-2 pt-9.5 max-md:grid-cols-2">
+      {
+        speakers.map((speaker) => (
+          <div class="scroll-mt-6" id={speaker.id}>
+            <SpeakerCard speaker={speaker} as="h2" />
+            <ul class="mt-3 grid gap-1.5 text-label">
+              {sessions
+                .filter((session) => session.speaker?.id === speaker.id)
+                .map((session) => (
+                  <li>
+                    <a class="border-b-2 border-primary-500 dark:border-primary-400" href={`/programme/${session.day.slug}/#${session.id}`}>
+                      {session.day.short}, {session.data.time} · {session.data.title}
+                    </a>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </main>
+</Site>

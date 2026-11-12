@@ -1,0 +1,16 @@
+---
+// The programme filtered to one day, kind or room: a static page for each of the filters' links.
+import type { GetStaticPaths } from "astro";
+import Programme from "../../components/Programme.astro";
+import { getFestival } from "../../lib/festival";
+
+export const getStaticPaths = (async () => {
+  const festival = await getFestival();
+  const filters = [...festival.days.map((day) => day.slug), "talks", "workshops", ...festival.rooms.map((room) => room.slug)];
+  return filters.map((filter) => ({ params: { filter } }));
+}) satisfies GetStaticPaths;
+
+const { filter } = Astro.params;
+---
+
+<Programme filter={filter} />

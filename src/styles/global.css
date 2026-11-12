@@ -1,0 +1,136 @@
+/* Halftone's one stylesheet, for every page the Site layout draws. The tokens are in theme.css; the pages are styled
+   with Tailwind's utilities in their markup. What stays here is what utilities cannot say cleanly: the dot screen,
+   the timetable's sessions and slots, the contact sheet's frames, the plan's pins, and the motion. */
+@import "tailwindcss";
+@import "./theme.css";
+
+/* Dark follows the visitor's system, as the design does. */
+@custom-variant dark (@media (prefers-color-scheme: dark));
+/* The link for the page, filter or day being shown. */
+@custom-variant current (&[aria-current]);
+
+@layer base {
+  /* Tailwind's preflight gives html a line height of 1.5; Halftone's text keeps the browser's normal one. */
+  html {
+    @apply bg-tertiary-100 leading-normal dark:bg-neutral-950;
+  }
+  body {
+    @apply overflow-x-clip bg-tertiary-100 font-sans text-neutral-900 antialiased dark:bg-neutral-950 dark:text-tertiary-200;
+  }
+  h1,
+  h2 {
+    @apply font-display;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-3 outline-secondary-500 dark:outline-secondary-400;
+  }
+}
+
+@layer components {
+  /* The page column. */
+  .wrap {
+    @apply mx-auto w-full max-w-page px-10 max-md:px-4.5;
+  }
+
+  /* A section's title, its second word printed in the blue pass. */
+  .section-title {
+    @apply text-heading font-extrabold max-md:text-heading-sm;
+    & em {
+      @apply not-italic text-secondary-500 dark:text-secondary-400;
+    }
+  }
+  /* A page's title, its last word in the pink pass. */
+  .page-title {
+    @apply animate-rise text-banner font-black max-md:text-banner-sm;
+    & em {
+      @apply not-italic text-primary-500 dark:text-primary-400;
+    }
+  }
+
+  /* The halftone: a dot screen laid over colour, as a print would be. */
+  .dots {
+    background-image: radial-gradient(circle at center, var(--color-neutral-900) 1.2px, transparent 1.6px);
+    background-size: 9px 9px;
+    @variant dark {
+      background-image: radial-gradient(circle at center, var(--color-tertiary-200) 1.2px, transparent 1.6px);
+    }
+  }
+
+  /* The timetable: an hour's cell in a room, ruled solid between the rooms and dashed between the hours. */
+  .slot {
+    @apply min-h-16 border-t border-l-2 border-t-tertiary-300 p-1.5 dark:border-t-neutral-700;
+    border-top-style: dashed;
+  }
+
+  /* A session in the timetable: talks carry a pink edge, workshops a blue one, and the one on now is printed pink. */
+  .session {
+    @apply block h-full border-2 border-neutral-900 bg-tertiary-100 px-3 py-2.5 transition duration-300 ease-glide hover:-translate-x-1 hover:-translate-y-1 hover:shadow-offset max-md:p-1.5 dark:border-tertiary-200 dark:bg-neutral-950 dark:hover:shadow-secondary-400;
+    &[data-kind="talk"] {
+      @apply border-l-8 border-l-primary-500 dark:border-l-primary-400;
+    }
+    &[data-kind="workshop"] {
+      @apply border-l-8 border-l-secondary-500 dark:border-l-secondary-400;
+    }
+    &[data-now] {
+      @apply bg-primary-500 text-neutral-900 dark:bg-primary-400;
+    }
+    &[data-now]::before {
+      content: "ON NOW";
+      @apply mb-1 block font-display text-micro font-extrabold tracking-flag;
+      animation: blink 1.6s steps(2) infinite;
+    }
+  }
+  @keyframes blink {
+    50% { opacity: 0.2; }
+  }
+
+  /* Speakers: a contact sheet, each frame printed in blue until it is pointed at. */
+  .contact {
+    @apply block size-full object-cover mix-blend-multiply grayscale contrast-120;
+    transition: filter 0.4s, scale 0.6s var(--ease-glide);
+    .group:hover & {
+      @apply scale-105 filter-none mix-blend-normal;
+    }
+  }
+
+  /* The plan's pins drop onto their rooms one after another. */
+  .pin {
+    transform-box: fill-box;
+    transform-origin: bottom;
+    animation: drop-pin 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+    animation-delay: calc(var(--i) * 0.2s + 0.4s);
+  }
+  @keyframes drop-pin {
+    from { opacity: 0; transform: translateY(-30px); }
+  }
+}
+
+/* Motion. Only transform and opacity move, so it stays on the compositor. Under prefers-reduced-motion everything
+   is still, and a browser without scroll timelines simply shows the page. */
+
+/* Page changes: the browser's cross-document view transition; the page fades and slides. */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}
+
+@layer components {
+  ::view-transition-old(root) { animation: 260ms cubic-bezier(0.4, 0, 1, 1) both vt-out; }
+  ::view-transition-new(root) { animation: 420ms cubic-bezier(0, 0, 0.2, 1) 80ms both vt-in; }
+  ::view-transition-group(*) { animation-duration: 520ms; animation-timing-function: var(--ease-glide); }
+  @keyframes vt-out { to { opacity: 0; transform: translateY(-12px); } }
+  @keyframes vt-in { from { opacity: 0; transform: translateY(24px); } }
+
+  /* Scroll-driven: the timetable, the frames and the programme's rows rise into view with `translate` and `scale`,
+     so a hover's own movement still applies. */
+  @supports (animation-timeline: view()) {
+    .reveal { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
+  }
+  @keyframes reveal { from { opacity: 0; translate: 0 70px; scale: 0.97; } }
+
+  /* Still: reduced motion, and the stills a mock renders with `html.still`. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+  html.still *, html.still *::before, html.still *::after { animation: none !important; transition: none !important; }
+}

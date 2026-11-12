@@ -1,0 +1,105 @@
+---
+// One day's timetable: the rooms across, the hours down, each session a card in its room for as many hours as it
+// runs. The rooms' names stay at the top while the table scrolls past. The session on now is printed pink: while
+// the festival is on, by the festival's own clock; at any other time, the sample's `lit` session.
+import type { Day, Festival, Session } from "../lib/festival";
+
+interface Props {
+  festival: Festival;
+  day: Day;
+  sessions: Session[];
+}
+
+const { festival, day, sessions } = Astro.props;
+const daySessions = sessions.filter((session) => session.day === day);
+const first = Math.floor(Math.min(...daySessions.map((session) => session.start)) / 60);
+const last = Math.ceil(Math.max(...daySessions.map((session) => session.end)) / 60);
+const hours = Array.from({ length: last - first }, (_, i) => first + i);
+const span = { 1: "", 2: "row-span-2", 3: "row-span-3" } as const;
+
+// Each hour's row: the sessions that start in it, an empty cell where a room is free, and nothing where a session
+// from an earlier hour still runs, so the grid places every cell in its room.
+const rows = hours.map((hour) => ({
+  label: `${String(hour).padStart(2, "0")}:00`,
+  cells: festival.rooms.flatMap((room): { session?: Session }[] => {
+    const starting = daySessions.find((s) => s.room === room && Math.floor(s.start / 60) === hour);
+    if (starting) return [{ session: starting }];
+    const running = daySessions.some((s) => s.room === room && s.start < hour * 60 && s.end > hour * 60);
+    return running ? [] : [{ session: undefined }];
+  }),
+}));
+
+const label = (session: Session) => {
+  if (!session.speaker) return session.data.note ?? "";
+  const length = session.data.hours > 1 ? `, ${session.data.hours} h` : "";
+  return `${session.speaker.data.name} · ${session.data.kind}${length}`;
+};
+---
+
+<div
+  class="reveal grid grid-cols-timetable border-2 bg-tertiary-50 max-md:grid-cols-timetable-sm max-md:text-session-sm dark:bg-neutral-800"
+  data-timetable
+  data-date={day.date}
+  data-zone={festival.timeZone}
+>
+  <div class="sticky top-0 border-b-2 bg-tertiary-50 dark:bg-neutral-800" aria-hidden="true"></div>
+  {
+    festival.rooms.map((room) => (
+      <div class="sticky top-0 border-b-2 border-l-2 bg-tertiary-50 p-3 font-display text-label font-bold uppercase max-md:px-1.5 max-md:py-2 max-md:text-room-sm dark:bg-neutral-800">
+        {room.name}
+      </div>
+    ))
+  }
+  {
+    rows.map((row) => (
+      <Fragment>
+        <div class="border-t border-dashed border-tertiary-300 px-3 py-2.5 text-small font-semibold text-neutral-600 dark:border-neutral-700 dark:text-neutral-300">
+          {row.label}
+        </div>
+        {row.cells.map(({ session }) =>
+          session ? (
+            <div class:list={["slot", span[session.data.hours as 1 | 2 | 3]]}>
+              <a
+                class="session group"
+                href={`/programme/${session.day.slug}/#${session.id}`}
+                data-kind={session.data.kind}
+                data-now={session.data.lit ? "" : undefined}
+                data-start={session.start}
+                data-end={session.end}
+              >
+                <b class="block text-ui leading-session max-md:text-session-sm">{session.data.title}</b>
+                <small class="text-small text-neutral-600 group-data-now:text-neutral-900 max-md:hidden dark:text-neutral-300">
+                  {label(session)}
+                </small>
+              </a>
+            </div>
+          ) : (
+            <div class="slot" />
+          ),
+        )}
+      </Fragment>
+    ))
+  }
+</div>
+
+<script>
+  // While the festival is on, the sessions on now by its own clock are printed pink in place of the sample's.
+  for (const table of document.querySelectorAll<HTMLElement>("[data-timetable]")) {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: table.dataset.zone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }).formatToParts(new Date());
+    const part = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+    if (`${part("year")}-${part("month")}-${part("day")}` !== table.dataset.date) continue;
+    const minutes = Number(part("hour")) * 60 + Number(part("minute"));
+    for (const session of table.querySelectorAll<HTMLElement>("[data-start]")) {
+      const on = minutes >= Number(session.dataset.start) && minutes < Number(session.dataset.end);
+      session.toggleAttribute("data-now", on);
+    }
+  }
+</script>

@@ -1,0 +1,28 @@
+---
+// The venue: the building, its plan and how to get there.
+import VenuePlan from "../components/VenuePlan.astro";
+import Site from "../layouts/Site.astro";
+import { getFestival, unsplash } from "../lib/festival";
+
+const festival = await getFestival();
+---
+
+<Site title={festival.venue}>
+  <main class="wrap">
+    <div class="pt-11 pb-7.5">
+      <h1 class="page-title">The <em>{festival.venue.replace(/^The /, "")}</em></h1>
+    </div>
+    <div class="grid grid-cols-2 items-stretch gap-7 max-md:grid-cols-1">
+      <figure class="overflow-hidden border-2">
+        <img class="block size-full object-cover" src={unsplash(festival.venuePhoto.src, 1400)} width="1400" height="1050" alt={festival.venuePhoto.alt} />
+      </figure>
+      <VenuePlan note={festival.gettingHere} />
+    </div>
+    <section class="pt-14">
+      <h2 class="section-title">Getting <em>here</em></h2>
+      <div class="mt-6.5 grid max-w-blurb gap-4 text-name leading-blurb">
+        {festival.venueNotes.map((note) => <p>{note}</p>)}
+      </div>
+    </section>
+  </main>
+</Site>

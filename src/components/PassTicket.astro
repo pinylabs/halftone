@@ -1,0 +1,22 @@
+---
+// A pass as a ticket stub, dashed at its edge; the highlighted one is printed pink. It leads to where the pass is
+// sold, or to the passes page.
+import type { Pass } from "../lib/festival";
+
+interface Props {
+  pass: Pass;
+}
+
+const { pass } = Astro.props;
+---
+
+<a
+  class:list={[
+    "block border-2 border-dashed p-4.5 transition-transform duration-450 ease-glide hover:-translate-y-2",
+    pass.data.highlight && "bg-primary-500 text-neutral-900 dark:bg-primary-400",
+  ]}
+  href={pass.data.url ?? `/passes/#${pass.id}`}
+>
+  <b class="block font-display text-price">{pass.data.price}</b>
+  <span class="opacity-80">{pass.data.blurb}</span>
+</a>

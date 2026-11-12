@@ -1,0 +1,32 @@
+---
+// The passes, and what each one covers.
+import PassTicket from "../components/PassTicket.astro";
+import Site from "../layouts/Site.astro";
+import { getFestival, getPasses } from "../lib/festival";
+
+const festival = await getFestival();
+const passes = await getPasses();
+---
+
+<Site title="Get a pass">
+  <main>
+    <div class="wrap pt-11 pb-7.5">
+      <h1 class="page-title">Get a <em>pass</em></h1>
+      <p class="mt-5.5 max-w-lede text-lede max-md:text-lede-sm">{festival.dates}, {festival.venue}, {festival.city}.</p>
+    </div>
+    <section class="bg-neutral-900 text-tertiary-100 dark:bg-tertiary-200 dark:text-neutral-950" aria-label="The passes">
+      <div class="wrap grid grid-cols-2 gap-6 py-13.5 max-md:grid-cols-1 max-md:py-10">
+        {
+          passes.map((pass) => (
+            <div class="scroll-mt-6" id={pass.id}>
+              <PassTicket pass={pass} />
+              <h2 class="mt-5 text-title font-bold">{pass.data.name}</h2>
+              <p class="mt-2 max-w-blurb leading-blurb opacity-80">{pass.data.details}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+    <p class="wrap pt-9.5 text-ui leading-plan text-neutral-600 dark:text-neutral-300">{festival.passesNote}</p>
+  </main>
+</Site>

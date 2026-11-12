@@ -1,0 +1,35 @@
+---
+// The frame of every page: the festival's fonts, the header, the footer with the photos' credits, and the styles.
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import { getFestival } from "../lib/festival";
+import "../styles/global.css";
+
+interface Props {
+  /** The page's own title; the home passes none and takes the festival's. */
+  title?: string;
+  description?: string;
+}
+
+const festival = await getFestival();
+const { title, description = `${festival.dates}, ${festival.venue}, ${festival.city}. ${festival.lede}` } = Astro.props;
+const fullTitle = title ? `${title} — ${festival.name}` : festival.title;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600..900&family=Space+Grotesk:wght@400..700&display=swap" />
+  </head>
+  <body>
+    <SiteHeader />
+    <slot />
+    <SiteFooter />
+  </body>
+</html>

@@ -1,0 +1,48 @@
+# Sample content: Halftone, Northport and the Dye Works are made up. Change these to your festival's own.
+halftone:
+  name: Halftone
+  title: Halftone — a festival of design and print, Northport
+  dates: 14–16 May 2027
+  venue: The Dye Works
+  city: Northport
+  timeZone: Europe/London
+  lede: Three days of type, print and people who make things by hand.
+  ledeMark: Forty talks, twelve workshops
+  ledeEnd: and one very large press.
+  homeDay: sat
+  days:
+    - { slug: fri, short: Fri 14, name: Friday 14 May, date: "2027-05-14" }
+    - { slug: sat, short: Sat 15, name: Saturday 15 May, date: "2027-05-15" }
+    - { slug: sun, short: Sun 16, name: Sunday 16 May, date: "2027-05-16" }
+  rooms:
+    - { slug: main-hall, name: Main Hall }
+    - { slug: press-room, name: Press Room }
+    - { slug: the-yard, name: The Yard }
+  hero:
+    src: https://images.unsplash.com/photo-1619229725920-ac8b63b0631a
+    alt: A festival crowd at night under falling confetti
+    caption: Last year's closing night
+    credit:
+      photographer: Colin Lloyd
+      profile: https://unsplash.com/@onthesearchforpineapples
+      page: https://unsplash.com/photos/people-gathering-on-concert-during-night-time-W6_txbgkkeU
+  programmePhoto:
+    src: https://images.unsplash.com/photo-1773525912431-ee1eff5e1ab9
+    alt: A screen printing press in a workshop
+    credit:
+      photographer: Anthony Roberts
+      profile: https://unsplash.com/@arcreates
+      page: https://unsplash.com/photos/industrial-screen-printing-machine-in-a-workshop-setting-mwzpm3uNOlI
+  venuePhoto:
+    src: https://images.unsplash.com/photo-1779608993327-5531b0d41c69
+    alt: The old dye works, light through its high windows
+    credit:
+      photographer: X F
+      profile: https://unsplash.com/@aizerd
+      page: https://unsplash.com/photos/an-empty-old-industrial-warehouse-with-light-streaming-through-windows-BESI-pezF74
+  gettingHere: Ten minutes from Northport station on foot. Step-free throughout; quiet room off the Press Room.
+  venueNotes:
+    - The Dye Works is ten minutes from Northport station on foot. Leave by the river exit and follow the old towpath until the chimney.
+    - Every room is step-free, with lifts to the Press Room's gallery. The quiet room is off the Press Room, and open all three days.
+    - The Yard is outdoors under a canopy. Bring a layer for the evenings.
+  passesNote: Halftone is a template's sample festival, so these passes are not on sale. Give each pass the address of your ticket seller and its button goes there.

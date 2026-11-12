@@ -1,0 +1,7 @@
+# Sample content: a pass for Halftone's made-up festival. Add `url:` with your ticket seller's address to sell it.
+name: All three days
+price: £110
+blurb: All three days, workshops included
+details: Friday's opening night to Sunday's close, with a place kept for you in two workshops of your choice.
+highlight: true
+order: 2

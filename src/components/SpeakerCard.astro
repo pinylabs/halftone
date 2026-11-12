@@ -1,0 +1,27 @@
+---
+// A frame of the contact sheet: the speaker printed in blue until pointed at, their name and what they do. One
+// without a photo is printed as the dot screen alone.
+import { unsplash, type Speaker } from "../lib/festival";
+
+interface Props {
+  speaker: Speaker;
+  /** The heading level of the name, where the frame stands under a heading of its own. */
+  as?: "b" | "h2";
+}
+
+const { speaker, as: Name = "b" } = Astro.props;
+---
+
+<a class="group reveal block" href={`/speakers/#${speaker.id}`}>
+  <div class="aspect-square overflow-hidden border-2 bg-secondary-500 dark:bg-secondary-400">
+    {
+      speaker.data.photo ? (
+        <img class="contact" loading="lazy" src={unsplash(speaker.data.photo, 600)} width="600" height="600" alt={speaker.data.name} />
+      ) : (
+        <div class="dots size-full opacity-40" />
+      )
+    }
+  </div>
+  <Name class="mt-2.5 block font-display text-name font-bold">{speaker.data.name}</Name>
+  <span class="text-label text-neutral-600 dark:text-neutral-300">{speaker.data.role}</span>
+</a>

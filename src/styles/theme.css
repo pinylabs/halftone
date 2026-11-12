@@ -1,0 +1,179 @@
+/* Halftone's design tokens, the one file that sets the template's look. Every colour, face, size, radius, shadow,
+   measure and motion the pages use is named here, and the markup reaches them only through Tailwind's utilities:
+   change a value here and every page follows. `static` keeps every token in the stylesheet, so a design panel can
+   edit it live. */
+@theme static {
+  /* Tailwind's own palette, type scale and shapes are replaced by Halftone's, so nothing off-brand can slip in. */
+  --color-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --leading-*: initial;
+  --tracking-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --container-*: initial;
+  --animate-*: initial;
+
+  /* Primary: the fluorescent pink, the first pass of the print. 500 is the light ink, 400 the dark one. */
+  --color-primary: #ff3d8b;
+  --color-primary-50: #fff0f6;
+  --color-primary-100: #ffe0ec;
+  --color-primary-200: #ffc2d9;
+  --color-primary-300: #ff94bc;
+  --color-primary-400: #ff5c9d;
+  --color-primary-500: #ff3d8b;
+  --color-primary-600: #e8226f;
+  --color-primary-700: #c21459;
+  --color-primary-800: #9b1249;
+  --color-primary-900: #7a113d;
+  --color-primary-950: #4a0520;
+
+  /* Secondary: the blue, the second pass, printed over the pink. 500 light, 400 dark. */
+  --color-secondary: #2f5cff;
+  --color-secondary-50: #eef2ff;
+  --color-secondary-100: #dfe6ff;
+  --color-secondary-200: #c4d1ff;
+  --color-secondary-300: #9db1ff;
+  --color-secondary-400: #6f8dff;
+  --color-secondary-500: #2f5cff;
+  --color-secondary-600: #1c3fe6;
+  --color-secondary-700: #1630b8;
+  --color-secondary-800: #172b8f;
+  --color-secondary-900: #182970;
+  --color-secondary-950: #101a45;
+
+  /* Tertiary: the paper stock. Light pages use card 50, paper 100 and rule 300; dark pages print in ink 200. */
+  --color-tertiary: #f4efe4;
+  --color-tertiary-50: #fbf8f1;
+  --color-tertiary-100: #f4efe4;
+  --color-tertiary-200: #f1ede4;
+  --color-tertiary-300: #d9d1c1;
+  --color-tertiary-400: #c4b89f;
+  --color-tertiary-500: #ab9b7d;
+  --color-tertiary-600: #8c7c5f;
+  --color-tertiary-700: #6c5f48;
+  --color-tertiary-800: #4d4434;
+  --color-tertiary-900: #332d23;
+  --color-tertiary-950: #1f1b15;
+
+  /* Neutral: the ink. Light pages print ink 900 with soft words 600; dark pages use soft words 300, rule 700,
+     card 800 and paper 950. */
+  --color-neutral: #151515;
+  --color-neutral-50: #f6f5f2;
+  --color-neutral-100: #e9e7e2;
+  --color-neutral-200: #cfccc5;
+  --color-neutral-300: #a6a29a;
+  --color-neutral-400: #8a8680;
+  --color-neutral-500: #6e6a63;
+  --color-neutral-600: #57534c;
+  --color-neutral-700: #2b2b30;
+  --color-neutral-800: #1b1b1f;
+  --color-neutral-900: #151515;
+  --color-neutral-950: #121214;
+
+  --color-white: #fff;
+
+  /* Faces, loaded from Google Fonts by the layout: Unbounded for the wide display, Space Grotesk for the words. */
+  --font-sans: 'Space Grotesk', system-ui, sans-serif;
+  --font-display: 'Unbounded', system-ui, sans-serif;
+  --font-mono: monospace;
+  --font-weight-normal: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+
+  /* Type scale. Each size carries its line height and tracking; `leading-*` and `tracking-*` adjust one use. */
+  --text-micro: 11px;
+  --text-tag: 12px;
+  --text-small: 13px;
+  --text-label: 14px;
+  --text-ui: 15px;
+  --text-body: 16px;
+  --text-name: 18px;
+  --text-title: 20px;
+  --text-row: 21px;
+  --text-lede: 22px;
+  --text-lede--line-height: 1.4;
+  --text-price: 32px;
+  --text-day: 34px;
+  --text-heading: 54px;
+  --text-heading--line-height: 0.95;
+  --text-heading--letter-spacing: -0.03em;
+  --text-banner: 110px;
+  --text-banner--line-height: 0.9;
+  --text-banner--letter-spacing: -0.045em;
+  --text-poster: 168px;
+  --text-poster--line-height: 0.86;
+  --text-poster--letter-spacing: -0.045em;
+  /* The phone's sizes of the same parts. */
+  --text-room-sm: 11px;
+  --text-session-sm: 12px;
+  --text-lede-sm: 18px;
+  --text-lede-sm--line-height: 1.4;
+  --text-ticker-sm: 22px;
+  --text-ticker: 30px;
+  --text-heading-sm: 34px;
+  --text-heading-sm--line-height: 0.95;
+  --text-heading-sm--letter-spacing: -0.03em;
+  --text-banner-sm: 58px;
+  --text-banner-sm--line-height: 0.9;
+  --text-banner-sm--letter-spacing: -0.045em;
+  --text-poster-sm: 76px;
+  --text-poster-sm--line-height: 0.86;
+  --text-poster-sm--letter-spacing: -0.045em;
+
+  --leading-normal: normal;
+  --leading-session: 1.25;
+  --leading-blurb: 1.45;
+  --leading-plan: 1.5;
+
+  --tracking-normal: 0em;
+  --tracking-mark: 0.02em;
+  --tracking-caps: 0.06em;
+  --tracking-flag: 0.08em;
+
+  /* Shapes: the one rounded corner, the pass button's; everything else is printed square. */
+  --radius-tag: 4px;
+
+  /* A session pointed at casts the blue pass's shadow. */
+  --shadow-offset: 4px 4px 0 var(--color-secondary-500);
+
+  /* Measures: the page, the hero's lede and a session's blurb. Spacing keeps Tailwind's 4px step. */
+  --container-page: 1320px;
+  --container-lede: 560px;
+  --container-blurb: 640px;
+
+  /* Grids: the hero, the timetable's hours and three rooms, the passes' band, the programme's head and its rows. */
+  --grid-template-columns-hero: 1.15fr 0.85fr;
+  --grid-template-columns-timetable: 88px repeat(3, 1fr);
+  --grid-template-columns-timetable-sm: 54px repeat(3, 1fr);
+  --grid-template-columns-passes: 1.2fr 1fr 1fr;
+  --grid-template-columns-top: 1fr 420px;
+  --grid-template-columns-row: 110px 160px 1fr 200px;
+  --grid-template-columns-row-sm: 70px 1fr;
+
+  /* Motion: the one easing every glide shares, and the print's moments. */
+  --ease-glide: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* A heading's first moment: it rises into place. */
+  --animate-rise: rise 0.9s var(--ease-glide) 120ms both;
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(36px); }
+  }
+  /* The signature: the second pass of the word prints a few pixels out of register. */
+  --animate-register: register 1.4s var(--ease-glide) 0.3s both;
+  @keyframes register {
+    from { opacity: 0; translate: -28px 14px; }
+  }
+  /* The hero's dot screen prints in. */
+  --animate-print-in: print-in 1.6s ease-out 0.4s both;
+  @keyframes print-in {
+    from { opacity: 0; transform: scale(1.3); }
+  }
+  /* The line-up ticker runs past, one copy of the names then the next. */
+  --animate-tick: tick 38s linear infinite;
+  @keyframes tick {
+    to { transform: translateX(-50%); }
+  }
+}

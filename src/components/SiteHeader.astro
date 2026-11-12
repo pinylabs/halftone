@@ -1,0 +1,23 @@
+---
+// The masthead: the wordmark, its second half in the pink pass, and the way to the programme, speakers, venue and
+// passes. On a phone only the pass button stays.
+const path = Astro.url.pathname;
+const links = [
+  { href: "/programme/", label: "Programme" },
+  { href: "/speakers/", label: "Speakers" },
+  { href: "/venue/", label: "Venue" },
+];
+const current = (href: string) => (path.startsWith(href) ? "page" : undefined);
+---
+
+<header>
+  <div class="wrap">
+    <div class="flex h-19 items-center justify-between border-b-2">
+      <a class="font-display text-title font-extrabold tracking-mark" href="/">HALF<b class="text-primary-500 dark:text-primary-400">TONE</b></a>
+      <nav class="flex items-center gap-6.5 text-ui font-semibold" aria-label="Primary">
+        {links.map((link) => <a class="max-md:hidden" href={link.href} aria-current={current(link.href)}>{link.label}</a>)}
+        <a class="rounded-tag bg-neutral-900 px-4.5 py-2.5 text-tertiary-100 transition duration-250 ease-glide hover:-translate-y-0.5 dark:bg-tertiary-200 dark:text-neutral-950" href="/passes/" aria-current={current("/passes/")}>Get a pass</a>
+      </nav>
+    </div>
+  </div>
+</header>

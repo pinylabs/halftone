@@ -1,0 +1,22 @@
+---
+// The footer every page shares: that the festival is a sample, the credits of the photos it shows, and the Pinies
+// who made the site.
+import { getCredits, getFestival } from "../lib/festival";
+
+const festival = await getFestival();
+const credits = await getCredits();
+---
+
+<footer>
+  <div class="wrap flex flex-wrap justify-between gap-5 pt-7.5 pb-12 text-small text-neutral-600 dark:text-neutral-300">
+    <p>
+      {festival.name} is a template's sample festival. Photos: {credits.map((credit, i) => (
+        <Fragment>{i > 0 && ", "}<a class="hover:underline" href={credit.page}>{credit.photographer}</a></Fragment>
+      ))} on Unsplash.
+    </p>
+    <p class="flex flex-wrap gap-x-5 gap-y-1">
+      <span class="whitespace-nowrap">Made by the Pinies in <a class="font-semibold text-neutral-900 hover:underline dark:text-tertiary-200" href="https://piny.studio/home/"><img class="me-1 inline-block size-5 align-middle" src="/brand/piny-studio-mark.png" width="20" height="20" alt="" />Piny Studio</a></span>
+      <span>A Piny template preview</span>
+    </p>
+  </div>
+</footer>

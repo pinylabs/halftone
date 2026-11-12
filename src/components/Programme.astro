@@ -1,0 +1,105 @@
+---
+// The programme: every session, day by day, with the filters as plain links to the programme's own static pages
+// (a day, a kind or a room). A session with places to book opens out with its host and a booking line.
+import Site from "../layouts/Site.astro";
+import { getFestival, getSessions, unsplash, type Session } from "../lib/festival";
+
+interface Props {
+  /** The filter's slug, from the programme's filters; none for every session. */
+  filter?: string;
+}
+
+const { filter } = Astro.props;
+const festival = await getFestival();
+const all = await getSessions();
+
+const filters = [
+  { slug: undefined, label: "All", kind: false, test: () => true },
+  ...festival.days.map((day) => ({ slug: day.slug, label: day.short, kind: false, test: (s: Session) => s.day === day })),
+  { slug: "talks", label: "Talks", kind: true, test: (s: Session) => s.data.kind === "talk" },
+  { slug: "workshops", label: "Workshops", kind: true, test: (s: Session) => s.data.kind === "workshop" },
+  ...festival.rooms.map((room) => ({ slug: room.slug, label: room.name, kind: false, test: (s: Session) => s.room === room })),
+];
+const active = filters.find((candidate) => candidate.slug === filter) ?? filters[0];
+const sessions = all.filter(active.test);
+const days = festival.days
+  .map((day) => ({ day, sessions: sessions.filter((session) => session.day === day) }))
+  .filter((group) => group.sessions.length > 0);
+
+const kindTag = {
+  talk: "border-neutral-900 bg-primary-500 text-neutral-900 dark:bg-primary-400",
+  workshop: "border-secondary-500 bg-secondary-500 text-white dark:border-secondary-400 dark:bg-secondary-400 dark:text-neutral-900",
+  market: "",
+} as const;
+const host = (session: Session) => (session.speaker ? `With ${session.speaker.data.name} · ` : "");
+---
+
+<Site title={filter ? `${active.label} — The programme` : "The programme"}>
+  <main class="wrap">
+    <div class="grid grid-cols-top items-end gap-9 pt-11 pb-7.5 max-md:grid-cols-1">
+      <h1 class="page-title">The <em>programme</em></h1>
+      <figure class="aspect-4/3 overflow-hidden border-2 bg-primary-500 dark:bg-primary-400">
+        <img class="block size-full object-cover mix-blend-multiply grayscale contrast-115" src={unsplash(festival.programmePhoto.src, 900)} width="900" height="675" alt={festival.programmePhoto.alt} />
+      </figure>
+    </div>
+    <nav class="sticky top-0 z-2 flex flex-wrap gap-2 border-y-2 bg-tertiary-100 py-4 dark:bg-neutral-950" aria-label="Filter the programme">
+      {
+        filters.map((option) => (
+          <a
+            class:list={[
+              "border-2 px-3.25 py-1.75 text-label font-bold current:bg-neutral-900 current:text-tertiary-100 dark:current:bg-tertiary-200 dark:current:text-neutral-950",
+              option.kind && "border-primary-500 dark:border-primary-400",
+            ]}
+            href={option.slug ? `/programme/${option.slug}/` : "/programme/"}
+            aria-current={option === active ? "page" : undefined}
+          >
+            {option.label}
+          </a>
+        ))
+      }
+    </nav>
+    {
+      days.map(({ day, sessions }) => (
+        <section class="pt-9.5">
+          <h2 class="mb-3.5 text-day font-extrabold">{day.name}</h2>
+          {sessions.map((session) => {
+            const open = Boolean(session.data.places);
+            return (
+              <div
+                class:list={[
+                  "reveal grid scroll-mt-24 grid-cols-row items-baseline gap-4.5 max-md:grid-cols-row-sm",
+                  open
+                    ? "-mx-4.5 border-2 bg-tertiary-50 px-4.5 py-5.5 dark:bg-neutral-800"
+                    : "border-b border-dashed border-tertiary-300 py-4.5 dark:border-neutral-700",
+                ]}
+                id={session.id}
+              >
+                <time class="font-display text-title font-bold">{session.data.time}</time>
+                <span class="text-small font-bold tracking-caps text-neutral-600 uppercase max-md:hidden dark:text-neutral-300">{session.room.name}</span>
+                <div>
+                  <h3 class="block text-row font-bold">{session.data.title}</h3>
+                  <p class="mt-1 max-w-blurb leading-blurb text-neutral-600 dark:text-neutral-300">{session.data.blurb}</p>
+                </div>
+                <span class:list={["justify-self-end border-2 px-2.5 py-1.5 font-display text-tag font-extrabold tracking-caps uppercase max-md:hidden", kindTag[session.data.kind]]}>
+                  {session.data.kind}
+                </span>
+                {open && (
+                  <div class="col-start-3 col-end-5 mt-1 flex items-center gap-4 max-md:col-start-1 max-md:col-end-3">
+                    {session.data.photo && (
+                      <img class="size-16 border-2 object-cover grayscale" loading="lazy" src={unsplash(session.data.photo, 200)} width="200" height="200" alt="" />
+                    )}
+                    <span>
+                      {host(session)}
+                      {session.data.hours} {session.data.hours > 1 ? "hours" : "hour"} · {session.data.places}
+                    </span>
+                    <a class="border-b-2 border-primary-500 font-bold dark:border-primary-400" href="/passes/">Book a place</a>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </section>
+      ))
+    }
+  </main>
+</Site>
